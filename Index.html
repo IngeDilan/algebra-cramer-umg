@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resolución por Método de Cramer - UMG</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="card">
+    <div class="header">
+      <img src="logo_umg.png" alt="Logo Universidad Mariano Gálvez" class="logo">
+      <h1>Universidad Mariano Gálvez</h1>
+      <h2>Álgebra Lineal - Regla de Cramer</h2>
+    </div>
+
+    <div class="controls">
+      <label for="dimension">Tamaño del sistema ($N \times N$):</label>
+      <select id="dimension" onchange="generarMatriz()">
+        <option value="2">2 x 2</option>
+        <option value="3" selected>3 x 3</option>
+        <option value="4">4 x 4</option>
+      </select>
+    </div>
+
+    <form id="matrixForm">
+      <p class="instruction">Ingresa los coeficientes de la matriz y los términos independientes ($B$):</p>
+      <div id="matrixContainer" class="matrix-grid"></div>
+      
+      <button type="button" class="btn-primary" onclick="resolverCramer()">Calcular por Cramer</button>
+    </form>
+
+    <div id="resultados" class="results-container" style="display:none;">
+      <h3>Resultados y Procedimiento</h3>
+      <div id="pasos"></div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
