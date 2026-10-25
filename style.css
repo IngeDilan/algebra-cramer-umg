@@ -81,190 +81,6 @@ h2 {
 }
 
 .matrix-input {
-  width: 70px;
-  height: 42px;
-  text-align: center;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 1rem;
-  font-weight: bold;
-}
-
-.matrix-input:focus {
-  border-color: var(--primary-red);
-  outline: none;
-  box-shadow: 0 0 5px rgba(211, 47, 47, 0.4);
-}
-
-.equals {
-  font-weight: bold;
-  color: var(--primary-red);
-  padding: 0 6px;
-  font-size: 1.2rem;
-}
-
-.btn-primary {
-  width: 100%;
-  background: linear-gradient(135deg, var(--primary-red), var(--primary-orange));
-  color: white;
-  border: none;
-  padding: 14px;
-  font-size: 1.1rem;
-  font-weight: bold;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: opacity 0.2s;
-}
-
-.btn-primary:hover {
-  opacity: 0.92;
-}
-
-.results-container {
-  margin-top: 30px;
-  padding: 20px;
-  background-color: var(--light-orange);
-  border-left: 5px solid var(--primary-orange);
-  border-radius: 6px;
-}
-
-.results-container h3 {
-  color: var(--dark-red);
-  margin-bottom: 15px;
-}
-
-.step-box {
-  background: white;
-  padding: 15px;
-  border-radius: 6px;
-  margin-bottom: 15px;
-  border: 1px solid #ffcc80;
-}
-
-.step-title {
-  font-weight: bold;
-  color: var(--primary-red);
-  margin-bottom: 10px;
-  font-size: 1.05rem;
-}
-
-/* TABLA FORMATO REGLA DE SARRUS */
-.sarrus-table {
-  border-collapse: collapse;
-  margin: 15px auto;
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 1.1rem;
-  font-weight: bold;
-  text-align: center;
-}
-
-.sarrus-table td {
-  padding: 8px 12px;
-  border: 1px solid #e0e0e0;
-}
-
-/* Líneas verticales delimitadoras del determinante */
-.sarrus-table td.border-left-det {
-  border-left: 3px solid #212121;
-}
-
-.sarrus-table td.border-right-det {
-  border-right: 3px solid #212121;
-}
-
-/* Estilos de las diagonales */
-.sarrus-table td.repeat-col {
-  background-color: #fafafa;
-  color: #616161;
-}
-
-.diag-down {
-  color: #1B5E20; /* Verde diagonales descendentes (+) */
-  background-color: #E8F5E9;
-}
-:root {
-  --primary-red: #D32F2F;
-  --dark-red: #B71C1C;
-  --primary-orange: #FF6F00;
-  --light-orange: #FFE0B2;
-  --bg-color: #FFF3E0;
-  --text-color: #212121;
-}
-
-* {
-  box-sizing: border-box;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  padding: 20px;
-}
-
-.card {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(183, 28, 28, 0.15);
-  border-top: 6px solid var(--primary-red);
-  padding: 30px;
-  max-width: 800px;
-  width: 100%;
-}
-
-.header {
-  text-align: center;
-  margin-bottom: 25px;
-  border-bottom: 2px solid var(--light-orange);
-  padding-bottom: 15px;
-}
-
-.logo {
-  width: 100px;
-  height: auto;
-  margin-bottom: 10px;
-}
-
-h1 {
-  color: var(--primary-red);
-  font-size: 1.5rem;
-  margin-bottom: 5px;
-}
-
-h2 {
-  color: var(--primary-orange);
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
-.instruction {
-  font-size: 0.95rem;
-  margin-bottom: 20px;
-  color: #424242;
-  text-align: center;
-}
-
-.matrix-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 25px;
-  align-items: center;
-}
-
-.matrix-row {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
-.matrix-input {
   width: 75px;
   height: 42px;
   text-align: center;
@@ -325,7 +141,7 @@ h2 {
   font-size: 1.1rem;
 }
 
-/* ESTILOS DE LA MATRIZ EXTENDIDA EN TABLA */
+/* ESTILOS DE LA TABLA MATRIZ 3x5 EXTENDIDA */
 .cramer-table {
   border-collapse: collapse;
   margin: 15px auto;
@@ -338,21 +154,18 @@ h2 {
 
 .cramer-table td {
   padding: 10px 16px;
-  border: 1px solid #d0d0d0; /* Cuadrícula gris clara de cada casilla */
-  min-width: 55px;
+  border: 1px solid #d0d0d0;
+  min-width: 60px;
 }
 
-/* Línea vertical gruesa izquierda de la determinante */
 .cramer-table td.border-left-det {
   border-left: 3px solid #212121;
 }
 
-/* Línea vertical gruesa derecha que separa la matriz original de las columnas duplicadas */
 .cramer-table td.border-right-det {
   border-right: 3px solid #212121;
 }
 
-/* Fondo ligeramente gris para resaltar las 2 columnas agregadas */
 .cramer-table td.repeat-col {
   background-color: #f5f5f5;
   color: #424242;
@@ -362,18 +175,20 @@ h2 {
   background-color: #E8F5E9;
   color: #1B5E20;
   font-size: 1rem;
-  padding: 8px;
+  padding: 10px;
   border-radius: 4px;
   margin-top: 8px;
+  line-height: 1.6;
 }
 
 .diag-up-row {
   background-color: #FFEBEE;
   color: #B71C1C;
   font-size: 1rem;
-  padding: 8px;
+  padding: 10px;
   border-radius: 4px;
   margin-top: 8px;
+  line-height: 1.6;
 }
 
 .formula-line {
