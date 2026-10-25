@@ -16,17 +16,17 @@
 
     <form id="matrixForm">
       <p class="instruction">
-        Ingresa los coeficientes y los términos independientes.<br>
-        <small><em>Se aceptan enteros, decimales y fracciones (ej: -5, 2.5, -1/3, 3/4).</em></small>
+        Ingresa los coeficientes de la matriz y los términos independientes (B):<br>
+        <small><em>Acepta números enteros, decimales y fracciones (ej: -5, 2.5, 1/2, 5/4).</em></small>
       </p>
       
       <div id="matrixContainer" class="matrix-grid"></div>
 
-      <button type="button" class="btn-primary" onclick="resolverCramer()">Calcular por Cramer (Paso a Paso)</button>
+      <button type="button" class="btn-primary" onclick="resolverCramer()">Calcular por Cramer</button>
     </form>
 
     <div id="resultados" class="results-container" style="display:none;">
-      <h3>Procedimiento Analítico y Resultados Paso a Paso</h3>
+      <h3>Resultados y Procedimiento Paso a Paso</h3>
       <div id="pasos"></div>
     </div>
   </div>
