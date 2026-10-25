@@ -325,7 +325,7 @@ h2 {
   font-size: 1.1rem;
 }
 
-/* TABLA FORMATO MATRIZ EXTENDIDA 3x5 */
+/* ESTILOS DE LA MATRIZ EXTENDIDA EN TABLA */
 .cramer-table {
   border-collapse: collapse;
   margin: 15px auto;
@@ -333,22 +333,26 @@ h2 {
   font-size: 1.15rem;
   font-weight: bold;
   text-align: center;
+  background-color: #ffffff;
 }
 
 .cramer-table td {
-  padding: 10px 14px;
-  border: 1px solid #e0e0e0;
+  padding: 10px 16px;
+  border: 1px solid #d0d0d0; /* Cuadrícula gris clara de cada casilla */
+  min-width: 55px;
 }
 
-/* Delimitadores visuales de la matriz original */
+/* Línea vertical gruesa izquierda de la determinante */
 .cramer-table td.border-left-det {
   border-left: 3px solid #212121;
 }
 
+/* Línea vertical gruesa derecha que separa la matriz original de las columnas duplicadas */
 .cramer-table td.border-right-det {
   border-right: 3px solid #212121;
 }
 
+/* Fondo ligeramente gris para resaltar las 2 columnas agregadas */
 .cramer-table td.repeat-col {
   background-color: #f5f5f5;
   color: #424242;
