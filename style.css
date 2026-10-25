@@ -144,20 +144,59 @@ h2 {
 .step-title {
   font-weight: bold;
   color: var(--primary-red);
-  margin-bottom: 8px;
+  margin-bottom: 10px;
+  font-size: 1.05rem;
 }
 
-.matrix-display {
+/* TABLA FORMATO REGLA DE SARRUS */
+.sarrus-table {
+  border-collapse: collapse;
+  margin: 15px auto;
   font-family: 'Courier New', Courier, monospace;
-  background: #f9f9f9;
-  padding: 10px;
-  border-radius: 4px;
-  margin: 8px 0;
-  white-space: pre-wrap;
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-align: center;
 }
 
-.formula {
+.sarrus-table td {
+  padding: 8px 12px;
+  border: 1px solid #e0e0e0;
+}
+
+/* Líneas verticales delimitadoras del determinante */
+.sarrus-table td.border-left-det {
+  border-left: 3px solid #212121;
+}
+
+.sarrus-table td.border-right-det {
+  border-right: 3px solid #212121;
+}
+
+/* Estilos de las diagonales */
+.sarrus-table td.repeat-col {
+  background-color: #fafafa;
+  color: #616161;
+}
+
+.diag-down {
+  color: #1B5E20; /* Verde diagonales descendentes (+) */
+  background-color: #E8F5E9;
+}
+
+.diag-up {
+  color: #B71C1C; /* Rojo diagonales ascendentes (-) */
+  background-color: #FFEBEE;
+}
+
+.formula-line {
   font-size: 1.05rem;
   font-weight: bold;
   color: #333;
+  margin-top: 10px;
+  text-align: center;
+}
+
+.highlight-result {
+  color: var(--primary-red);
+  font-size: 1.15rem;
 }
