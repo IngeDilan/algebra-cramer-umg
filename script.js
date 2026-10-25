@@ -124,7 +124,7 @@ function calcularDeterminanteCramer() {
   // 4. Determinante Final D_p
   let Dp = sumaDesc.restar(sumaAsc);
 
-  // CONSTRUCCIÓN DEL PASO A PASO EN PANTALLA
+// Construcción de la tabla 3x5 bien estructurada
   let htmlTabla = `
     <table class="cramer-table">
       <tr>
@@ -151,12 +151,14 @@ function calcularDeterminanteCramer() {
     </table>
   `;
 
+  // Asignar el HTML estructurado dentro del Paso 1
   pasosDiv.innerHTML = `
     <div class="step-box">
       <div class="step-title">1. Extensión de la Matriz (Duplicando Columna 1 y Columna 2)</div>
       <p>Se agregan las dos primeras columnas a la derecha para formar la matriz de 3 × 5:</p>
       ${htmlTabla}
     </div>
+  `;
 
     <div class="step-box">
       <div class="step-title">2. Multiplicación de Diagonales Descendentes (↘)</div>
