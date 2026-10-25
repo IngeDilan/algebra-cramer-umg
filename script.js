@@ -1,4 +1,4 @@
-// CLASE PARA OPERACIONES Y FRACCIONES EXACTAS
+// CLASE PARA ARITMÉTICA Y OPERACIONES CON FRACCIONES
 class Fraccion {
   constructor(numerador, denominador = 1) {
     if (denominador === 0) {
@@ -15,13 +15,15 @@ class Fraccion {
   }
 
   static parse(val) {
+    if (val === undefined || val === null) return new Fraccion(0);
     if (typeof val === 'number') return new Fraccion(val);
     let str = val.toString().trim();
+    if (str === '') return new Fraccion(0);
     if (str.includes('/')) {
       let partes = str.split('/');
       let n = parseFloat(partes[0]);
       let d = parseFloat(partes[1]);
-      if (isNaN(n) || isNaN(d)) return new Fraccion(0);
+      if (isNaN(n) || isNaN(d) || d === 0) return new Fraccion(0);
       return new Fraccion(n, d);
     }
     let num = parseFloat(str);
@@ -54,18 +56,10 @@ class Fraccion {
   }
 }
 
-// FORMATO DE CADENA CON SIGNO EXPLÍCITO (+ / -)
-function formatoConSigno(f) {
-  if (f.num >= 0) {
-    return `+ ${f.toString()}`;
-  } else {
-    return `- ${Math.abs(f.num)}${f.den !== 1 ? '/' + f.den : ''}`;
-  }
-}
-
-// DIBUJAR MATRIZ 3x3
+// GENERAR CASILLAS DE ENTRADA EN LA PANTALLA
 function generarMatriz3x3() {
   const container = document.getElementById('matrixContainer');
+  if (!container) return;
   container.innerHTML = '';
 
   for (let i = 0; i < 3; i++) {
@@ -85,24 +79,27 @@ function generarMatriz3x3() {
   }
 }
 
-// CÁLCULO EXCLUSIVO DEL DETERMINANTE CON EXTENSIÓN DE MATRIZ 3x5
+// CÁLCULO DEL DETERMINANTE CON TABLA EXTENDIDA ESTILO SARRUS (3x5)
 function calcularDeterminanteCramer() {
   let A = [];
 
   for (let i = 0; i < 3; i++) {
     A[i] = [];
     for (let j = 0; j < 3; j++) {
-      let val = document.getElementById(`a_${i}_${j}`).value;
+      let elem = document.getElementById(`a_${i}_${j}`);
+      let val = elem ? elem.value : '0';
       A[i][j] = Fraccion.parse(val);
     }
   }
 
   const resultadosDiv = document.getElementById('resultados');
   const pasosDiv = document.getElementById('pasos');
+  if (!resultadosDiv || !pasosDiv) return;
+  
   resultadosDiv.style.display = 'block';
   pasosDiv.innerHTML = '';
 
-  // 1. Matriz extendida 3 filas x 5 columnas (duplicando col 1 y col 2)
+  // 1. Matriz extendida 3 filas x 5 columnas
   let E = [
     [A[0][0], A[0][1], A[0][2], A[0][0], A[0][1]],
     [A[1][0], A[1][1], A[1][2], A[1][0], A[1][1]],
@@ -124,7 +121,7 @@ function calcularDeterminanteCramer() {
   // 4. Determinante Final D_p
   let Dp = sumaDesc.restar(sumaAsc);
 
-// Construcción de la tabla 3x5 bien estructurada
+  // RENDERIZADO DE TABLA ESTICADA CON BORDES
   let htmlTabla = `
     <table class="cramer-table">
       <tr>
@@ -151,14 +148,12 @@ function calcularDeterminanteCramer() {
     </table>
   `;
 
-  // Asignar el HTML estructurado dentro del Paso 1
   pasosDiv.innerHTML = `
     <div class="step-box">
       <div class="step-title">1. Extensión de la Matriz (Duplicando Columna 1 y Columna 2)</div>
       <p>Se agregan las dos primeras columnas a la derecha para formar la matriz de 3 × 5:</p>
       ${htmlTabla}
     </div>
-  `;
 
     <div class="step-box">
       <div class="step-title">2. Multiplicación de Diagonales Descendentes (↘)</div>
@@ -193,4 +188,5 @@ function calcularDeterminanteCramer() {
   `;
 }
 
-window.onload = generarMatriz3x3;
+// INICIALIZACIÓN AUTOMÁTICA
+document.addEventListener('DOMContentLoaded', generarMatriz3x3);
