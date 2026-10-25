@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Resolución por Método de Cramer (3x3) - UMG</title>
+  <title>Determinante por Método de Cramer (Matriz 3x3) - UMG</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,22 +11,22 @@
     <div class="header">
       <img src="logo_umg.png" alt="Logo Universidad Mariano Gálvez" class="logo">
       <h1>Universidad Mariano Gálvez</h1>
-      <h2>Álgebra Lineal - Regla de Cramer (Matriz 3 x 3)</h2>
+      <h2>Álgebra Lineal - Determinante por Método de Cramer (3 x 3)</h2>
     </div>
 
     <form id="matrixForm">
       <p class="instruction">
-        Ingresa los coeficientes de la matriz y los términos independientes (B):<br>
+        Ingresa los valores de la matriz 3 x 3:<br>
         <small><em>Acepta números enteros, decimales y fracciones (ej: -5, 2.5, 1/2, 5/4).</em></small>
       </p>
       
       <div id="matrixContainer" class="matrix-grid"></div>
 
-      <button type="button" class="btn-primary" onclick="resolverCramer()">Calcular por Cramer</button>
+      <button type="button" class="btn-primary" onclick="calcularDeterminanteCramer()">Calcular Determinante Paso a Paso</button>
     </form>
 
     <div id="resultados" class="results-container" style="display:none;">
-      <h3>Resultados y Procedimiento Paso a Paso</h3>
+      <h3>Procedimiento Paso a Paso</h3>
       <div id="pasos"></div>
     </div>
   </div>
