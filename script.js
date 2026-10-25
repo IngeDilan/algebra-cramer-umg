@@ -1,4 +1,4 @@
-// CLASE PARA OPERACIONES CON FRACCIONES EXACTAS
+// CLASE PARA OPERACIONES Y SIMPLIFICACIÓN CON FRACCIONES
 class Fraccion {
   constructor(numerador, denominador = 1) {
     if (denominador === 0) {
@@ -26,7 +26,6 @@ class Fraccion {
     }
     let num = parseFloat(str);
     if (isNaN(num)) return new Fraccion(0);
-    // Convertir decimal a fracción aproximada
     if (Number.isInteger(num)) return new Fraccion(num, 1);
     let len = str.split('.')[1]?.length || 0;
     let den = Math.pow(10, len);
@@ -63,7 +62,7 @@ class Fraccion {
   }
 }
 
-// INICIALIZACIÓN DE LA MATRIZ 3x3 EN PANTALLA
+// CONSTRUCCIÓN DE LA MATRIZ 3x3
 function generarMatriz3x3() {
   const container = document.getElementById('matrixContainer');
   container.innerHTML = '';
@@ -98,38 +97,67 @@ function generarMatriz3x3() {
   }
 }
 
-// CÁLCULO DE DETERMINANTE 3x3 CON EXPANSION POR LAPLACE (PASO A PASO)
-function obtenerDet3x3ConPasos(M) {
-  // M es matriz 3x3 de Fracciones
-  let c11 = M[1][1].multiplicar(M[2][2]).restar(M[1][2].multiplicar(M[2][1]));
-  let c12 = M[1][0].multiplicar(M[2][2]).restar(M[1][2].multiplicar(M[2][0]));
-  let c13 = M[1][0].multiplicar(M[2][1]).restar(M[1][1].multiplicar(M[2][0]));
+// CÁLCULO VISUAL CON LA REGLA DE SARRUS
+function calcularSarrusConPasos(M, nombreDet) {
+  // Productos descendentes (diagonales principales)
+  let d1 = M[0][0].multiplicar(M[1][1]).multiplicar(M[2][2]);
+  let d2 = M[0][1].multiplicar(M[1][2]).multiplicar(M[2][0]);
+  let d3 = M[0][2].multiplicar(M[1][0]).multiplicar(M[2][1]);
+  let sumaDesc = d1.sumar(d2).sumar(d3);
 
-  let t1 = M[0][0].multiplicar(c11);
-  let t2 = M[0][1].multiplicar(c12);
-  let t3 = M[0][2].multiplicar(c13);
+  // Productos ascendentes (diagonales secundarias)
+  let u1 = M[2][0].multiplicar(M[1][1]).multiplicar(M[0][2]);
+  let u2 = M[2][1].multiplicar(M[1][2]).multiplicar(M[0][0]);
+  let u3 = M[2][2].multiplicar(M[1][0]).multiplicar(M[0][1]);
+  let sumaAsc = u1.sumar(u2).sumar(u3);
 
-  let det = t1.restar(t2).sumar(t3);
+  let detFinal = sumaDesc.restar(sumaAsc);
 
-  let explicacion = `  (${M[0][0]})·[(${M[1][1]})(${M[2][2]}) - (${M[1][2]})(${M[2][1]})]\n` +
-                    `- (${M[0][1]})·[(${M[1][0]})(${M[2][2]}) - (${M[1][2]})(${M[2][0]})]\n` +
-                    `+ (${M[0][2]})·[(${M[1][0]})(${M[2][1]}) - (${M[1][1]})(${M[2][0]})]\n` +
-                    `= ${t1} - (${t2}) + (${t3}) = ${det}`;
+  // Renderizado en HTML estilo gráfico Sarrus
+  let htmlTabla = `
+    <table class="sarrus-table">
+      <tr>
+        <td class="border-left-det">${M[0][0].toString()}</td>
+        <td>${M[0][1].toString()}</td>
+        <td class="border-right-det">${M[0][2].toString()}</td>
+        <td class="repeat-col">${M[0][0].toString()}</td>
+        <td class="repeat-col">${M[0][1].toString()}</td>
+      </tr>
+      <tr>
+        <td class="border-left-det">${M[1][0].toString()}</td>
+        <td>${M[1][1].toString()}</td>
+        <td class="border-right-det">${M[1][2].toString()}</td>
+        <td class="repeat-col">${M[1][0].toString()}</td>
+        <td class="repeat-col">${M[1][1].toString()}</td>
+      </tr>
+      <tr>
+        <td class="border-left-det">${M[2][0].toString()}</td>
+        <td>${M[2][1].toString()}</td>
+        <td class="border-right-det">${M[2][2].toString()}</td>
+        <td class="repeat-col">${M[2][0].toString()}</td>
+        <td class="repeat-col">${M[2][1].toString()}</td>
+      </tr>
+    </table>
 
-  return { det, explicacion };
+    <div class="formula-line">
+      <p style="color: #1B5E20; margin-bottom: 5px;">
+        <strong>Diagonales Principales (↘):</strong> 
+        (${d1.toString()}) + (${d2.toString()}) + (${d3.toString()}) = <strong>${sumaDesc.toString()}</strong>
+      </p>
+      <p style="color: #B71C1C; margin-bottom: 8px;">
+        <strong>Diagonales Secundarias (↗):</strong> 
+        (${u1.toString()}) + (${u2.toString()}) + (${u3.toString()}) = <strong>${sumaAsc.toString()}</strong>
+      </p>
+      <p class="highlight-result">
+        ${nombreDet} = (${sumaDesc.toString()}) - (${sumaAsc.toString()}) = <strong>${detFinal.toString()}</strong>
+      </p>
+    </div>
+  `;
+
+  return { det: detFinal, html: htmlTabla };
 }
 
-function formatoMatrizTexto(M, B = null) {
-  let txt = "";
-  for (let i = 0; i < 3; i++) {
-    txt += `|  ${M[i][0].toString().padStart(6)}  ${M[i][1].toString().padStart(6)}  ${M[i][2].toString().padStart(6)}  |`;
-    if (B) txt += `   =   [ ${B[i].toString()} ]`;
-    txt += "\n";
-  }
-  return txt;
-}
-
-// RESOLUCIÓN COMPLETA POR CRAMER
+// EJECUCIÓN DEL MÉTODO DE CRAMER
 function resolverCramer() {
   let A = [];
   let B = [];
@@ -149,79 +177,64 @@ function resolverCramer() {
   resultadosDiv.style.display = 'block';
   pasosDiv.innerHTML = '';
 
-  // PASO 1: SISTEMA FORMULADO
-  pasosDiv.innerHTML += `
-    <div class="step-box">
-      <div class="step-title">Paso 1: Formulación Matricial del Sistema (AX = B)</div>
-      <div class="matrix-display">${formatoMatrizTexto(A, B)}</div>
-    </div>
-  `;
-
-  // PASO 2: DETERMINANTE PRINCIPAL
-  let resDetA = obtenerDet3x3ConPasos(A);
-  let detA = resDetA.det;
+  // PASO 1: DETERMINANTE PRINCIPAL D_p (det A)
+  let resDp = calcularSarrusConPasos(A, 'D_p');
+  let Dp = resDp.det;
 
   pasosDiv.innerHTML += `
     <div class="step-box">
-      <div class="step-title">Paso 2: Cálculo del Determinante Principal det(A)</div>
-      <div class="matrix-display">${formatoMatrizTexto(A)}</div>
-      <p><strong>Desarrollo por Cofactores:</strong></p>
-      <div class="matrix-display">${resDetA.explicacion}</div>
-      <p class="formula">det(A) = ${detA.toString()} ${!detA.den === 1 ? '≈ ' + detA.toDecimal() : ''}</p>
+      <div class="step-title">1. Calcular el valor del Determinante Principal (D_p) por Regla de Sarrus</div>
+      ${resDp.html}
     </div>
   `;
 
   // VALIDACIÓN DE SINGULARIDAD
-  if (detA.esCero()) {
+  if (Dp.esCero()) {
     pasosDiv.innerHTML += `
       <div class="step-box" style="border-color: var(--primary-red);">
-        <div class="step-title" style="color: var(--dark-red);">¡Atención: det(A) = 0!</div>
-        <p>El determinante principal es igual a cero. La Regla de Cramer <strong>no es aplicable</strong> porque se generaría una división entre cero. El sistema es <em>Incompatible</em> (sin solución) o <em>Compatible Indeterminado</em> (infinitas soluciones).</p>
+        <div class="step-title" style="color: var(--dark-red);">¡Atención: D_p = 0!</div>
+        <p>El determinante principal es 0. La Regla de Cramer no se puede aplicar directamente ya que requiere dividir entre D_p. El sistema no tiene solución única (es Incompatible o Indeterminado).</p>
       </div>
     `;
     return;
   }
 
-  // PASO 3: DETERMINANTES MODIFICADOS Y SOLUCIONES
-  let nombresVar = ['x₁', 'x₂', 'x₃'];
+  // PASO 2: DETERMINANTES MODIFICADOS (Dx, Dy, Dz) Y VARIABLES
+  let nombresVar = ['x', 'y', 'z'];
+  let simbDet = ['D_x', 'D_y', 'D_z'];
   let soluciones = [];
 
   for (let j = 0; j < 3; j++) {
-    // Clonar A y reemplazar la columna j por B
     let Aj = A.map(row => [...row]);
     for (let i = 0; i < 3; i++) {
       Aj[i][j] = B[i];
     }
 
-    let resDetAj = obtenerDet3x3ConPasos(Aj);
-    let detAj = resDetAj.det;
-    let xj = detAj.dividir(detA);
-    soluciones.push(xj);
+    let resDj = calcularSarrusConPasos(Aj, simbDet[j]);
+    let Dj = resDj.det;
+    let valVar = Dj.dividir(Dp);
+    soluciones.push(valVar);
 
     pasosDiv.innerHTML += `
       <div class="step-box">
-        <div class="step-title">Paso 3.${j+1}: Matriz Modificada A_${j+1} y Cálculo de ${nombresVar[j]}</div>
-        <p>Sustituyendo la Columna ${j+1} por el vector B:</p>
-        <div class="matrix-display">${formatoMatrizTexto(Aj)}</div>
-        <p><strong>Desarrollo de det(A_${j+1}):</strong></p>
-        <div class="matrix-display">${resDetAj.explicacion}</div>
-        <p class="formula">det(A_${j+1}) = ${detAj.toString()}</p>
-        <hr style="margin: 10px 0;">
-        <p class="formula">
-          ${nombresVar[j]} = det(A_${j+1}) / det(A) = (${detAj.toString()}) / (${detA.toString()}) = <span style="color: var(--primary-red);">${xj.toString()}</span> 
-          ${xj.den !== 1 ? '(≈ ' + xj.toDecimal() + ')' : ''}
-        </p>
+        <div class="step-title">2.${j+1}. Calcular el valor de ${simbDet[j]} (Sustituyendo Columna ${j+1} por vector B)</div>
+        ${resDj.html}
+        <div class="formula-line" style="margin-top: 15px; background: #FFF3E0; padding: 10px; border-radius: 4px;">
+          ${nombresVar[j]} = ${simbDet[j]} / D_p = (${Dj.toString()}) / (${Dp.toString()}) = 
+          <span class="highlight-result">${valVar.toString()}</span>
+          ${valVar.den !== 1 ? ' (≈ ' + valVar.toDecimal() + ')' : ''}
+        </div>
       </div>
     `;
   }
 
-  // PASO 4: RESUMEN FINAL
+  // RESUMEN DE RESULTADOS FINALES
   pasosDiv.innerHTML += `
     <div class="step-box" style="background-color: #E8F5E9; border-color: #81C784;">
-      <div class="step-title" style="color: #2E7D32;">Paso 4: Vector Solución Final</div>
-      <p class="formula">x₁ = ${soluciones[0].toString()} &nbsp;&nbsp;(≈ ${soluciones[0].toDecimal()})</p>
-      <p class="formula">x₂ = ${soluciones[1].toString()} &nbsp;&nbsp;(≈ ${soluciones[1].toDecimal()})</p>
-      <p class="formula">x₃ = ${soluciones[2].toString()} &nbsp;&nbsp;(≈ ${soluciones[2].toDecimal()})</p>
+      <div class="step-title" style="color: #2E7D32;">3. Solución Final del Sistema</div>
+      <p class="formula-line">x = <strong>${soluciones[0].toString()}</strong> ${soluciones[0].den !== 1 ? '(≈ ' + soluciones[0].toDecimal() + ')' : ''}</p>
+      <p class="formula-line">y = <strong>${soluciones[1].toString()}</strong> ${soluciones[1].den !== 1 ? '(≈ ' + soluciones[1].toDecimal() + ')' : ''}</p>
+      <p class="formula-line">z = <strong>${soluciones[2].toString()}</strong> ${soluciones[2].den !== 1 ? '(≈ ' + soluciones[2].toDecimal() + ')' : ''}</p>
     </div>
   `;
 }
