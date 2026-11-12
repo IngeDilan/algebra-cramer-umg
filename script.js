@@ -1,112 +1,187 @@
 // ==========================================
-// 1. CAPTURA Y VALIDACIÓN DE DATOS
+// 1. PARSER DE ENTRADAS (ENTEROS, DECIMALES, FRACCIONES Y NEGATIVOS)
 // ==========================================
-function capturarMatriz() {
-    const inputs = document.querySelectorAll('.matrix-input');
-    const valores = [];
+function parsearEntradaNumerica(texto) {
+    // Limpiar espacios y cambiar comas decimales por puntos
+    const limpio = texto.trim().replace(/,/g, '.');
+    if (limpio === '') return null;
 
-    for (let i = 0; i < inputs.length; i++) {
-        const valorTexto = inputs[i].value.trim();
-        if (valorTexto === '' || isNaN(Number(valorTexto))) {
-            alert(`Por favor ingresa un número válido en la celda ${i + 1}.`);
-            inputs[i].focus();
+    // Validar si es una fracción tipo "a/b" (ej. -5/4, 1/2)
+    if (limpio.includes('/')) {
+        const partes = limpio.split('/');
+        if (partes.length !== 2) return null;
+
+        const numerador = Number(partes[0]);
+        const denominador = Number(partes[1]);
+
+        if (isNaN(numerador) || isNaN(denominador) || denominador === 0) {
             return null;
         }
-        valores.push(parseFloat(valorTexto));
+        return {
+            valor: numerador / denominador,
+            etiqueta: limpio
+        };
     }
 
-    // Estructurar arreglo unidimensional en matriz 3x3
+    // Validar número entero o decimal normal (incluyendo negativos)
+    const numero = Number(limpio);
+    if (isNaN(numero)) return null;
+
+    return {
+        valor: numero,
+        etiqueta: limpio
+    };
+}
+
+function capturarMatriz() {
+    const inputs = document.querySelectorAll('.matrix-input');
+    const datos = [];
+
+    for (let i = 0; i < inputs.length; i++) {
+        const parsed = parsearEntradaNumerica(inputs[i].value);
+        if (!parsed) {
+            alert(`Valor inválido en la casilla ${i + 1} ("${inputs[i].value}").\nIngresa enteros, decimales o fracciones válidas (ej: -5, 2.5, 1/2).`);
+            inputs[i].focus();
+            inputs[i].select();
+            return null;
+        }
+        datos.push(parsed);
+    }
+
     return [
-        [valores[0], valores[1], valores[2]],
-        [valores[3], valores[4], valores[5]],
-        [valores[6], valores[7], valores[8]]
+        [datos[0], datos[1], datos[2]],
+        [datos[3], datos[4], datos[5]],
+        [datos[6], datos[7], datos[8]]
     ];
 }
 
 // ==========================================
-// 2. MOTOR DE CÁLCULO (REGLA DE SARRUS)
+// 2. MOTOR DE CÁLCULO (REGLA DE SARRUS 3x3)
 // ==========================================
-function calcularSarrus(A) {
-    const a11 = A[0][0], a12 = A[0][1], a13 = A[0][2];
-    const a21 = A[1][0], a22 = A[1][1], a23 = A[1][2];
-    const a31 = A[2][0], a32 = A[2][1], a33 = A[2][2];
+function calcularSarrus(M) {
+    const v = (r, c) => M[r][c].valor;
+    const e = (r, c) => M[r][c].etiqueta;
 
-    // Productos de diagonales principales (Dp)
-    const dp1 = a11 * a22 * a33;
-    const dp2 = a12 * a23 * a31;
-    const dp3 = a13 * a21 * a32;
-    const Dp = dp1 + dp2 + dp3;
+    // Diagonales Descendentes (↘)
+    const d1 = v(0, 0) * v(1, 1) * v(2, 2);
+    const d2 = v(0, 1) * v(1, 2) * v(2, 0);
+    const d3 = v(0, 2) * v(1, 0) * v(2, 1);
+    const sumaDesc = d1 + d2 + d3;
 
-    // Productos de diagonales secundarias (Ds)
-    const ds1 = a13 * a22 * a31;
-    const ds2 = a11 * a23 * a32;
-    const ds3 = a12 * a21 * a33;
-    const Ds = ds1 + ds2 + ds3;
+    // Diagonales Ascendentes (↗)
+    const a1 = v(2, 0) * v(1, 1) * v(0, 2);
+    const a2 = v(2, 1) * v(1, 2) * v(0, 0);
+    const a3 = v(2, 2) * v(1, 0) * v(0, 1);
+    const sumaAsc = a1 + a2 + a3;
 
-    // Determinante principal
-    const detA = Dp - Ds;
-
-    // Tolerancia numérica para evitar imprecisiones de punto flotante
-    const tieneSolucionUnica = Math.abs(detA) > 1e-9;
+    // Determinante Principal
+    const detRaw = sumaDesc - sumaAsc;
+    const tieneSolucionUnica = Math.abs(detRaw) > 1e-9;
+    const detFinal = tieneSolucionUnica ? detRaw : 0;
 
     return {
-        A,
-        dp1, dp2, dp3, Dp,
-        ds1, ds2, ds3, Ds,
-        detA: tieneSolucionUnica ? detA : 0,
+        M, e,
+        d1, d2, d3, sumaDesc,
+        a1, a2, a3, sumaAsc,
+        detFinal,
         tieneSolucionUnica
     };
 }
 
 // ==========================================
-// 3. RENDERIZADO DE RESULTADOS Y LIMPIEZA
+// 3. RENDERIZADO VISUAL Y LIMPIEZA
 // ==========================================
+function formatearNumero(num) {
+    if (Math.abs(num) < 1e-9) return '0';
+    return Number.isInteger(num) ? num.toString() : Number(num.toFixed(4)).toString();
+}
+
 function procesarCalculo() {
     const matriz = capturarMatriz();
     if (!matriz) return;
 
     const res = calcularSarrus(matriz);
-    renderizarResultado(res);
+    renderizarProcedimiento(res);
 }
 
-function renderizarResultado(res) {
+function renderizarProcedimiento(res) {
     const contenedor = document.getElementById('resultados');
-    const A = res.A;
+    const e = res.e;
+    const fmt = formatearNumero;
 
-    // Formateo visual de números
-    const fmt = (n) => Number.isInteger(n) ? n : Number(n.toFixed(4));
-
-    const claseDiagnostico = res.tieneSolucionUnica ? 'diagnosis-unique' : 'diagnosis-singular';
-    const textoDiagnostico = res.tieneSolucionUnica
+    const claseDiag = res.tieneSolucionUnica ? 'diag-ok' : 'diag-zero';
+    const mensajeDiag = res.tieneSolucionUnica
         ? 'DIAGNÓSTICO: Det(A) ≠ 0 — El sistema es Compatible Determinado y EXISTE SOLUCIÓN ÚNICA.'
         : 'DIAGNÓSTICO: Det(A) = 0 — Matriz Singular. El sistema NO TIENE SOLUCIÓN ÚNICA (puede tener infinitas soluciones o ninguna).';
 
     contenedor.innerHTML = `
-        <h3>Procedimiento Paso a Paso (Regla de Sarrus)</h3>
-        
-        <div class="step-box">
-            <strong>1. Suma de Diagonales Principales (D<sub>p</sub>):</strong><br>
-            D<sub>p</sub> = (${fmt(A[0][0])} · ${fmt(A[1][1])} · ${fmt(A[2][2])}) + (${fmt(A[0][1])} · ${fmt(A[1][2])} · ${fmt(A[2][0])}) + (${fmt(A[0][2])} · ${fmt(A[1][0])} · ${fmt(A[2][1])})<br>
-            D<sub>p</sub> = (${fmt(res.dp1)}) + (${fmt(res.dp2)}) + (${fmt(res.dp3)}) = <strong>${fmt(res.Dp)}</strong>
+        <h3 class="results-title">Procedimiento Paso a Paso</h3>
+
+        <!-- Paso 1: Matriz Extendida -->
+        <div class="step-card">
+            <h4>1. Extensión de la Matriz (Duplicando Columna 1 y Columna 2)</h4>
+            <p class="step-desc">Se agregan las dos primeras columnas a la derecha para formar la matriz de 3 × 5:</p>
+            <table class="extended-matrix-table">
+                <tr>
+                    <td>${e(0,0)}</td><td>${e(0,1)}</td><td class="col-divider">${e(0,2)}</td>
+                    <td class="duplicated-col">${e(0,0)}</td><td class="duplicated-col">${e(0,1)}</td>
+                </tr>
+                <tr>
+                    <td>${e(1,0)}</td><td>${e(1,1)}</td><td class="col-divider">${e(1,2)}</td>
+                    <td class="duplicated-col">${e(1,0)}</td><td class="duplicated-col">${e(1,1)}</td>
+                </tr>
+                <tr>
+                    <td>${e(2,0)}</td><td>${e(2,1)}</td><td class="col-divider">${e(2,2)}</td>
+                    <td class="duplicated-col">${e(2,0)}</td><td class="duplicated-col">${e(2,1)}</td>
+                </tr>
+            </table>
         </div>
 
-        <div class="step-box">
-            <strong>2. Suma de Diagonales Secundarias (D<sub>s</sub>):</strong><br>
-            D<sub>s</sub> = (${fmt(A[0][2])} · ${fmt(A[1][1])} · ${fmt(A[2][0])}) + (${fmt(A[0][0])} · ${fmt(A[1][2])} · ${fmt(A[2][1])}) + (${fmt(A[0][1])} · ${fmt(A[1][0])} · ${fmt(A[2][2])})<br>
-            D<sub>s</sub> = (${fmt(res.ds1)}) + (${fmt(res.ds2)}) + (${fmt(res.ds3)}) = <strong>${fmt(res.Ds)}</strong>
+        <!-- Paso 2: Diagonales Descendentes -->
+        <div class="step-card">
+            <h4>2. Multiplicación de Diagonales Descendentes (↘)</h4>
+            <p class="step-desc">Multiplicación en diagonal de izquierda a derecha:</p>
+            <div class="diag-box diag-desc">
+                <ul>
+                    <li>Diagonal 1: (${e(0,0)}) × (${e(1,1)}) × (${e(2,2)}) = <strong>${fmt(res.d1)}</strong></li>
+                    <li>Diagonal 2: (${e(0,1)}) × (${e(1,2)}) × (${e(2,0)}) = <strong>${fmt(res.d2)}</strong></li>
+                    <li>Diagonal 3: (${e(0,2)}) × (${e(1,0)}) × (${e(2,1)}) = <strong>${fmt(res.d3)}</strong></li>
+                </ul>
+            </div>
+            <p class="diag-sum-line">
+                <strong>Suma de Diagonales Descendentes:</strong> (${fmt(res.d1)}) + (${fmt(res.d2)}) + (${fmt(res.d3)}) = <strong style="color:#1B5E20;">${fmt(res.sumaDesc)}</strong>
+            </p>
         </div>
 
-        <div class="step-box">
-            <strong>3. Diferencia de Diagonales:</strong><br>
-            Det(A) = D<sub>p</sub> - D<sub>s</sub> = ${fmt(res.Dp)} - (${fmt(res.Ds)})
+        <!-- Paso 3: Diagonales Ascendentes -->
+        <div class="step-card">
+            <h4>3. Multiplicación de Diagonales Ascendentes (↗)</h4>
+            <p class="step-desc">Multiplicación en diagonal de izquierda a derecha (hacia arriba):</p>
+            <div class="diag-box diag-asc">
+                <ul>
+                    <li>Diagonal 1: (${e(2,0)}) × (${e(1,1)}) × (${e(0,2)}) = <strong>${fmt(res.a1)}</strong></li>
+                    <li>Diagonal 2: (${e(2,1)}) × (${e(1,2)}) × (${e(0,0)}) = <strong>${fmt(res.a2)}</strong></li>
+                    <li>Diagonal 3: (${e(2,2)}) × (${e(1,0)}) × (${e(0,1)}) = <strong>${fmt(res.a3)}</strong></li>
+                </ul>
+            </div>
+            <p class="diag-sum-line">
+                <strong>Suma de Diagonales Ascendentes:</strong> (${fmt(res.a1)}) + (${fmt(res.a2)}) + (${fmt(res.a3)}) = <strong style="color:#B71C1C;">${fmt(res.sumaAsc)}</strong>
+            </p>
         </div>
 
-        <div class="det-final">
-            Det(A) = ${fmt(res.detA)}
-        </div>
-
-        <div class="diagnosis-box ${claseDiagnostico}">
-            ${textoDiagnostico}
+        <!-- Paso 4: Resultado Final y Diagnóstico -->
+        <div class="step-card final-card">
+            <h4>4. Resultado Final del Determinante (Det A)</h4>
+            <div class="formula-lines">
+                Det(A) = (Suma Descendentes) - (Suma Ascendentes)<br>
+                Det(A) = (${fmt(res.sumaDesc)}) - (${fmt(res.sumaAsc)})
+            </div>
+            <div class="det-big-result">
+                Det(A) = ${fmt(res.detFinal)}
+            </div>
+            <div class="diagnosis-banner ${claseDiag}">
+                ${mensajeDiag}
+            </div>
         </div>
     `;
 
@@ -115,27 +190,23 @@ function renderizarResultado(res) {
 }
 
 function limpiarMatriz() {
-    // 1. Restablecer todas las celdas a "0"
     const inputs = document.querySelectorAll('.matrix-input');
     inputs.forEach(input => {
         input.value = '0';
     });
 
-    // 2. Ocultar el contenedor de resultados y borrar su contenido
     const contenedorResultados = document.getElementById('resultados');
     if (contenedorResultados) {
         contenedorResultados.style.display = 'none';
         contenedorResultados.innerHTML = '';
     }
 
-    // 3. Enfocar y seleccionar la primera celda (a11)
     if (inputs.length > 0) {
         inputs[0].focus();
         inputs[0].select();
     }
 }
 
-// Enfocar la primera casilla automáticamente al cargar la página
 window.addEventListener('DOMContentLoaded', () => {
     const primerInput = document.querySelector('.matrix-input');
     if (primerInput) {
@@ -143,5 +214,3 @@ window.addEventListener('DOMContentLoaded', () => {
         primerInput.select();
     }
 });
-// INICIALIZACIÓN AUTOMÁTICA
-document.addEventListener('DOMContentLoaded', generarMatriz3x3);
