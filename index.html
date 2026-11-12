@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Determinante por Método de Cramer (Sarrus 3x3) | UMG</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Determinante por Método de Cramer (3x3) | UMG</title>
+    <link rel="stylesheet" href="style.css?v=2">
 </head>
 <body>
     <main class="container">
@@ -18,24 +18,23 @@
         <!-- Instrucciones -->
         <section class="instructions">
             <p>Ingresa los valores de la matriz 3 x 3:</p>
-            <p class="sub-instruction"><em>Acepta números enteros, decimales y fracciones (ej: -5, 2.5, 1/2, 5/4).</em></p>
+            <p class="sub-instruction"><em>Acepta números enteros, decimales y fracciones (ej: -5, 2.5, 1/2, -5/2).</em></p>
         </section>
 
-        <!-- Formulario de Matriz 3x3 -->
+        <!-- Formulario de Matriz 3x3 (Casillas limpias sin ceros fijos) -->
         <form id="matrixForm" onsubmit="event.preventDefault(); procesarCalculo();">
             <div class="matrix-grid">
-                <!-- Fila 1 -->
-                <input type="text" class="matrix-input" value="0" aria-label="Fila 1 Columna 1" required>
-                <input type="text" class="matrix-input" value="0" aria-label="Fila 1 Columna 2" required>
-                <input type="text" class="matrix-input" value="0" aria-label="Fila 1 Columna 3" required>
-                <!-- Fila 2 -->
-                <input type="text" class="matrix-input" value="0" aria-label="Fila 2 Columna 1" required>
-                <input type="text" class="matrix-input" value="0" aria-label="Fila 2 Columna 2" required>
-                <input type="text" class="matrix-input" value="0" aria-label="Fila 2 Columna 3" required>
-                <!-- Fila 3 -->
-                <input type="text" class="matrix-input" value="0" aria-label="Fila 3 Columna 1" required>
-                <input type="text" class="matrix-input" value="0" aria-label="Fila 3 Columna 2" required>
-                <input type="text" class="matrix-input" value="0" aria-label="Fila 3 Columna 3" required>
+                <input type="text" class="matrix-input" placeholder="0" aria-label="Fila 1 Columna 1">
+                <input type="text" class="matrix-input" placeholder="0" aria-label="Fila 1 Columna 2">
+                <input type="text" class="matrix-input" placeholder="0" aria-label="Fila 1 Columna 3">
+
+                <input type="text" class="matrix-input" placeholder="0" aria-label="Fila 2 Columna 1">
+                <input type="text" class="matrix-input" placeholder="0" aria-label="Fila 2 Columna 2">
+                <input type="text" class="matrix-input" placeholder="0" aria-label="Fila 2 Columna 3">
+
+                <input type="text" class="matrix-input" placeholder="0" aria-label="Fila 3 Columna 1">
+                <input type="text" class="matrix-input" placeholder="0" aria-label="Fila 3 Columna 2">
+                <input type="text" class="matrix-input" placeholder="0" aria-label="Fila 3 Columna 3">
             </div>
 
             <!-- Botones de Acción -->
@@ -45,7 +44,7 @@
             </div>
         </form>
 
-        <!-- Panel de Resultados Paso a Paso -->
+        <!-- Panel de Resultados -->
         <section id="resultados" class="results-wrapper" style="display: none;"></section>
 
         <!-- Pie de página -->
@@ -54,6 +53,7 @@
         </footer>
     </main>
 
-    <script src="script.js"></script>
+    <!-- ?v=2 fuerza al navegador a descargar el nuevo JS y no usar el viejo de caché -->
+    <script src="script.js?v=2"></script>
 </body>
 </html>
