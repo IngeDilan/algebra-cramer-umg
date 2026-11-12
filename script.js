@@ -1,42 +1,71 @@
+// ==========================================
+// 1. EVALUADOR DE EXPRESIONES MATEMÁTICAS
+// ==========================================
 function parsearEntradaNumerica(texto) {
-    // Eliminar todos los espacios internos y reemplazar comas por puntos
-    const limpio = texto.replace(/\s+/g, '').replace(/,/g, '.');
+    // Guardar la etiqueta original limpia para mostrarla en el procedimiento
+    const etiquetaOriginal = texto.trim();
     
-    // Si la celda se deja vacía, se interpreta automáticamente como 0
-    if (limpio === '') {
+    // Si la celda está vacía, vale 0
+    if (etiquetaOriginal === '') {
         return { valor: 0, etiqueta: '0' };
     }
 
-    // Validar fracciones como "-5/2", "1/4", "-3/-2"
-    if (limpio.includes('/')) {
-        const partes = limpio.split('/');
-        if (partes.length !== 2 || partes[0] === '' || partes[1] === '') {
-            return null;
+    // Normalizar expresión para evaluación matemática
+    let expr = etiquetaOriginal.toLowerCase()
+        .replace(/\s+/g, '')       // Quitar espacios
+        .replace(/,/g, '.')        // Comas a puntos decimales
+        .replace(/×/g, '*')        // Símbolo de multiplicación
+        .replace(/÷/g, '/')        // Símbolo de división
+        .replace(/\^/g, '**');     // Potencias (ej. 2^3 -> 2**3)
+
+    // Soporte para raíces: √9, √(9), sqrt(9), raiz(9)
+    expr = expr.replace(/√(\d+(\.\d+)?)/g, 'Math.sqrt($1)');
+    expr = expr.replace(/√\(/g, 'Math.sqrt(');
+    expr = expr.replace(/\b(sqrt|raiz)\(/g, 'Math.sqrt(');
+
+    // Constantes matemáticas
+    expr = expr.replace(/\bpi\b/g, 'Math.PI');
+    expr = expr.replace(/\be\b/g, 'Math.E');
+
+    // Funciones trigonométricas en GRADOS (ej. sin(30) = 0.5, cos(60) = 0.5)
+    // Si contiene Math.PI dentro, lo evalúa en radianes automáticamente
+    const toRad = (deg) => (deg * Math.PI) / 180;
+    const sin = (x) => Math.sin(expr.includes('Math.PI') ? x : toRad(x));
+    const cos = (x) => Math.cos(expr.includes('Math.PI') ? x : toRad(x));
+    const tan = (x) => {
+        if (!expr.includes('Math.PI') && Math.abs(x % 180) === 90) {
+            throw new Error('Tangente indefinida');
         }
+        return Math.tan(expr.includes('Math.PI') ? x : toRad(x));
+    };
 
-        const numerador = Number(partes[0]);
-        const denominador = Number(partes[1]);
+    // Reemplazar "sen(" por "sin("
+    expr = expr.replace(/\bsen\(/g, 'sin(');
 
-        if (isNaN(numerador) || isNaN(denominador) || denominador === 0) {
+    // Multiplicación implícita (ej: 2sqrt(2) -> 2*Math.sqrt(2), 3pi -> 3*Math.PI)
+    expr = expr.replace(/(\d)(Math\.|sin\(|cos\(|tan\()/g, '$1*$2');
+
+    // Filtro de seguridad: permitir únicamente caracteres matemáticos válidos
+    const caracteresPermitidos = /^[0-9+\-*/().MathsqrtPIEsincoab]+$/;
+    if (!caracteresPermitidos.test(expr)) {
+        return null;
+    }
+
+    try {
+        // Evaluar la expresión matemática de forma segura
+        const resultado = Function('sin', 'cos', 'tan', `"use strict"; return (${expr});`)(sin, cos, tan);
+
+        if (typeof resultado !== 'number' || isNaN(resultado) || !isFinite(resultado)) {
             return null;
         }
 
         return {
-            valor: numerador / denominador,
-            etiqueta: limpio
+            valor: resultado,
+            etiqueta: etiquetaOriginal
         };
-    }
-
-    // Validar enteros y decimales (positivos o negativos)
-    const numero = Number(limpio);
-    if (isNaN(numero)) {
+    } catch (error) {
         return null;
     }
-
-    return {
-        valor: numero,
-        etiqueta: limpio
-    };
 }
 
 function capturarMatriz() {
@@ -46,7 +75,7 @@ function capturarMatriz() {
     for (let i = 0; i < inputs.length; i++) {
         const parsed = parsearEntradaNumerica(inputs[i].value);
         if (!parsed) {
-            alert(`El valor "${inputs[i].value}" en la celda ${i + 1} no es válido.\nUsa enteros, decimales o fracciones (ej: -5/2, 2.5, 4).`);
+            alert(`Expresión inválida en la celda ${i + 1} ("${inputs[i].value}").\n\nEjemplos válidos:\n• Enteros y decimales: -5, 2.5\n• Fracciones: -5/2, 3/4\n• Raíces: sqrt(2), raiz(9), √16\n• Trigonometría (grados): sen(30), cos(60), tan(45)\n• Potencias y constantes: 2^3, pi`);
             inputs[i].focus();
             inputs[i].select();
             return null;
@@ -61,6 +90,9 @@ function capturarMatriz() {
     ];
 }
 
+// ==========================================
+// 2. MOTOR DE CÁLCULO (REGLA DE SARRUS 3x3)
+// ==========================================
 function calcularSarrus(M) {
     const v = (r, c) => M[r][c].valor;
     const e = (r, c) => M[r][c].etiqueta;
@@ -91,8 +123,12 @@ function calcularSarrus(M) {
     };
 }
 
+// ==========================================
+// 3. RENDERIZADO VISUAL Y LIMPIEZA
+// ==========================================
 function formatearNumero(num) {
     if (Math.abs(num) < 1e-9) return '0';
+    // Redondear decimales largos a 4 cifras significativas sin ceros innecesarios
     return Number.isInteger(num) ? num.toString() : Number(num.toFixed(4)).toString();
 }
 
@@ -186,20 +222,17 @@ function renderizarProcedimiento(res) {
 }
 
 function limpiarMatriz() {
-    // 1. Dejar las casillas completamente vacías
     const inputs = document.querySelectorAll('.matrix-input');
     inputs.forEach(input => {
         input.value = '';
     });
 
-    // 2. Ocultar y vaciar el panel de resultados
     const contenedorResultados = document.getElementById('resultados');
     if (contenedorResultados) {
         contenedorResultados.style.display = 'none';
         contenedorResultados.innerHTML = '';
     }
 
-    // 3. Enfocar la primera celda lista para escribir
     if (inputs.length > 0) {
         inputs[0].focus();
     }
