@@ -1,15 +1,18 @@
-// ==========================================
-// 1. PARSER DE ENTRADAS (ENTEROS, DECIMALES, FRACCIONES Y NEGATIVOS)
-// ==========================================
 function parsearEntradaNumerica(texto) {
-    // Limpiar espacios y cambiar comas decimales por puntos
-    const limpio = texto.trim().replace(/,/g, '.');
-    if (limpio === '') return null;
+    // Eliminar todos los espacios internos y reemplazar comas por puntos
+    const limpio = texto.replace(/\s+/g, '').replace(/,/g, '.');
+    
+    // Si la celda se deja vacía, se interpreta automáticamente como 0
+    if (limpio === '') {
+        return { valor: 0, etiqueta: '0' };
+    }
 
-    // Validar si es una fracción tipo "a/b" (ej. -5/4, 1/2)
+    // Validar fracciones como "-5/2", "1/4", "-3/-2"
     if (limpio.includes('/')) {
         const partes = limpio.split('/');
-        if (partes.length !== 2) return null;
+        if (partes.length !== 2 || partes[0] === '' || partes[1] === '') {
+            return null;
+        }
 
         const numerador = Number(partes[0]);
         const denominador = Number(partes[1]);
@@ -17,15 +20,18 @@ function parsearEntradaNumerica(texto) {
         if (isNaN(numerador) || isNaN(denominador) || denominador === 0) {
             return null;
         }
+
         return {
             valor: numerador / denominador,
             etiqueta: limpio
         };
     }
 
-    // Validar número entero o decimal normal (incluyendo negativos)
+    // Validar enteros y decimales (positivos o negativos)
     const numero = Number(limpio);
-    if (isNaN(numero)) return null;
+    if (isNaN(numero)) {
+        return null;
+    }
 
     return {
         valor: numero,
@@ -40,7 +46,7 @@ function capturarMatriz() {
     for (let i = 0; i < inputs.length; i++) {
         const parsed = parsearEntradaNumerica(inputs[i].value);
         if (!parsed) {
-            alert(`Valor inválido en la casilla ${i + 1} ("${inputs[i].value}").\nIngresa enteros, decimales o fracciones válidas (ej: -5, 2.5, 1/2).`);
+            alert(`El valor "${inputs[i].value}" en la celda ${i + 1} no es válido.\nUsa enteros, decimales o fracciones (ej: -5/2, 2.5, 4).`);
             inputs[i].focus();
             inputs[i].select();
             return null;
@@ -55,9 +61,6 @@ function capturarMatriz() {
     ];
 }
 
-// ==========================================
-// 2. MOTOR DE CÁLCULO (REGLA DE SARRUS 3x3)
-// ==========================================
 function calcularSarrus(M) {
     const v = (r, c) => M[r][c].valor;
     const e = (r, c) => M[r][c].etiqueta;
@@ -88,9 +91,6 @@ function calcularSarrus(M) {
     };
 }
 
-// ==========================================
-// 3. RENDERIZADO VISUAL Y LIMPIEZA
-// ==========================================
 function formatearNumero(num) {
     if (Math.abs(num) < 1e-9) return '0';
     return Number.isInteger(num) ? num.toString() : Number(num.toFixed(4)).toString();
@@ -117,7 +117,6 @@ function renderizarProcedimiento(res) {
     contenedor.innerHTML = `
         <h3 class="results-title">Procedimiento Paso a Paso</h3>
 
-        <!-- Paso 1: Matriz Extendida -->
         <div class="step-card">
             <h4>1. Extensión de la Matriz (Duplicando Columna 1 y Columna 2)</h4>
             <p class="step-desc">Se agregan las dos primeras columnas a la derecha para formar la matriz de 3 × 5:</p>
@@ -137,7 +136,6 @@ function renderizarProcedimiento(res) {
             </table>
         </div>
 
-        <!-- Paso 2: Diagonales Descendentes -->
         <div class="step-card">
             <h4>2. Multiplicación de Diagonales Descendentes (↘)</h4>
             <p class="step-desc">Multiplicación en diagonal de izquierda a derecha:</p>
@@ -153,7 +151,6 @@ function renderizarProcedimiento(res) {
             </p>
         </div>
 
-        <!-- Paso 3: Diagonales Ascendentes -->
         <div class="step-card">
             <h4>3. Multiplicación de Diagonales Ascendentes (↗)</h4>
             <p class="step-desc">Multiplicación en diagonal de izquierda a derecha (hacia arriba):</p>
@@ -169,7 +166,6 @@ function renderizarProcedimiento(res) {
             </p>
         </div>
 
-        <!-- Paso 4: Resultado Final y Diagnóstico -->
         <div class="step-card final-card">
             <h4>4. Resultado Final del Determinante (Det A)</h4>
             <div class="formula-lines">
@@ -190,20 +186,22 @@ function renderizarProcedimiento(res) {
 }
 
 function limpiarMatriz() {
+    // 1. Dejar las casillas completamente vacías
     const inputs = document.querySelectorAll('.matrix-input');
     inputs.forEach(input => {
-        input.value = '0';
+        input.value = '';
     });
 
+    // 2. Ocultar y vaciar el panel de resultados
     const contenedorResultados = document.getElementById('resultados');
     if (contenedorResultados) {
         contenedorResultados.style.display = 'none';
         contenedorResultados.innerHTML = '';
     }
 
+    // 3. Enfocar la primera celda lista para escribir
     if (inputs.length > 0) {
         inputs[0].focus();
-        inputs[0].select();
     }
 }
 
@@ -211,6 +209,5 @@ window.addEventListener('DOMContentLoaded', () => {
     const primerInput = document.querySelector('.matrix-input');
     if (primerInput) {
         primerInput.focus();
-        primerInput.select();
     }
 });
