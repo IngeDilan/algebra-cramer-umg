@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Regla de Sarrus - Determinantes 3x3 | UMG</title>
+    <title>Determinante por Método de Cramer (Sarrus 3x3) | UMG</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,45 +11,42 @@
         <!-- Cabecera Institucional -->
         <header class="header">
             <img src="logo_umg.png" alt="Logo Universidad Mariano Gálvez" class="logo" onerror="this.style.display='none'">
-            <h1>Universidad Mariano Gálvez de Guatemala</h1>
-            <h2>Álgebra Lineal — Evaluación de Determinantes (Regla de Sarrus 3x3)</h2>
+            <h1>Universidad Mariano Gálvez</h1>
+            <h2>Álgebra Lineal - Determinante por Método de Cramer (3 x 3)</h2>
         </header>
 
         <!-- Instrucciones -->
         <section class="instructions">
-            <p>Ingresa los coeficientes de la matriz cuadrada <strong>A (3x3)</strong> para calcular su determinante mediante la <strong>Regla de Sarrus</strong> y diagnosticar si el sistema lineal admite solución única.</p>
+            <p>Ingresa los valores de la matriz 3 x 3:</p>
+            <p class="sub-instruction"><em>Acepta números enteros, decimales y fracciones (ej: -5, 2.5, 1/2, 5/4).</em></p>
         </section>
 
         <!-- Formulario de Matriz 3x3 -->
         <form id="matrixForm" onsubmit="event.preventDefault(); procesarCalculo();">
-            <div class="matrix-wrapper">
-                <div class="matrix-bracket left-bracket"></div>
-                <div id="matrixContainer" class="matrix-grid">
-                    <!-- Fila 1 -->
-                    <input type="number" step="any" class="matrix-input" value="0" aria-label="Fila 1 Columna 1" required>
-                    <input type="number" step="any" class="matrix-input" value="0" aria-label="Fila 1 Columna 2" required>
-                    <input type="number" step="any" class="matrix-input" value="0" aria-label="Fila 1 Columna 3" required>
-                    <!-- Fila 2 -->
-                    <input type="number" step="any" class="matrix-input" value="0" aria-label="Fila 2 Columna 1" required>
-                    <input type="number" step="any" class="matrix-input" value="0" aria-label="Fila 2 Columna 2" required>
-                    <input type="number" step="any" class="matrix-input" value="0" aria-label="Fila 2 Columna 3" required>
-                    <!-- Fila 3 -->
-                    <input type="number" step="any" class="matrix-input" value="0" aria-label="Fila 3 Columna 1" required>
-                    <input type="number" step="any" class="matrix-input" value="0" aria-label="Fila 3 Columna 2" required>
-                    <input type="number" step="any" class="matrix-input" value="0" aria-label="Fila 3 Columna 3" required>
-                </div>
-                <div class="matrix-bracket right-bracket"></div>
+            <div class="matrix-grid">
+                <!-- Fila 1 -->
+                <input type="text" class="matrix-input" value="0" aria-label="Fila 1 Columna 1" required>
+                <input type="text" class="matrix-input" value="0" aria-label="Fila 1 Columna 2" required>
+                <input type="text" class="matrix-input" value="0" aria-label="Fila 1 Columna 3" required>
+                <!-- Fila 2 -->
+                <input type="text" class="matrix-input" value="0" aria-label="Fila 2 Columna 1" required>
+                <input type="text" class="matrix-input" value="0" aria-label="Fila 2 Columna 2" required>
+                <input type="text" class="matrix-input" value="0" aria-label="Fila 2 Columna 3" required>
+                <!-- Fila 3 -->
+                <input type="text" class="matrix-input" value="0" aria-label="Fila 3 Columna 1" required>
+                <input type="text" class="matrix-input" value="0" aria-label="Fila 3 Columna 2" required>
+                <input type="text" class="matrix-input" value="0" aria-label="Fila 3 Columna 3" required>
             </div>
 
             <!-- Botones de Acción -->
             <div class="actions-container">
-                <button type="submit" id="btnCalcular" class="btn btn-primary">Calcular Determinante</button>
+                <button type="submit" id="btnCalcular" class="btn btn-primary">Calcular Determinante Paso a Paso</button>
                 <button type="button" id="btnLimpiar" class="btn btn-secondary" onclick="limpiarMatriz()">Limpiar Matriz</button>
             </div>
         </form>
 
-        <!-- Módulo de Resultados y Diagnóstico -->
-        <section id="resultados" class="results-panel" style="display: none;"></section>
+        <!-- Panel de Resultados Paso a Paso -->
+        <section id="resultados" class="results-wrapper" style="display: none;"></section>
 
         <!-- Pie de página -->
         <footer class="footer">
