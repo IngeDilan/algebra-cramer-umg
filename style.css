@@ -66,10 +66,10 @@ body {
     font-weight: 600;
 }
 
-/* Instrucciones */
+/* Instrucciones (Sin caja naranja, limpio y centrado como tu diseño) */
 .instructions {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 22px;
     font-size: 0.98rem;
 }
 
@@ -79,25 +79,31 @@ body {
     margin-top: 4px;
 }
 
-/* Rejilla 3x3 */
+/* Rejilla 3x3 compacta */
 .matrix-grid {
     display: grid;
-    grid-template-columns: repeat(3, 95px);
+    grid-template-columns: repeat(3, 88px);
     gap: 12px;
     justify-content: center;
     margin: 20px auto;
 }
 
 .matrix-input {
-    width: 95px;
-    height: 46px;
+    width: 88px;
+    height: 44px;
     text-align: center;
     font-size: 1.1rem;
     font-weight: bold;
     border: 1.5px solid #D0D0D0;
     border-radius: 8px;
     background-color: var(--white);
+    color: var(--text-dark);
     transition: all 0.2s ease;
+}
+
+.matrix-input::placeholder {
+    color: #CCCCCC;
+    font-weight: normal;
 }
 
 .matrix-input:focus {
@@ -111,13 +117,13 @@ body {
     display: flex;
     gap: 12px;
     justify-content: center;
-    margin-top: 22px;
+    margin-top: 24px;
     flex-wrap: wrap;
 }
 
 .btn {
-    padding: 14px 26px;
-    font-size: 1.05rem;
+    padding: 14px 24px;
+    font-size: 1.02rem;
     font-weight: bold;
     border: none;
     border-radius: 8px;
@@ -145,7 +151,7 @@ body {
     color: var(--white);
 }
 
-/* Panel Principal de Resultados (Naranja Claro) */
+/* Panel Principal de Resultados */
 .results-wrapper {
     margin-top: 28px;
     background-color: var(--light-orange);
@@ -160,7 +166,6 @@ body {
     margin-bottom: 16px;
 }
 
-/* Tarjetas blancas internas */
 .step-card {
     background-color: var(--white);
     border-radius: 8px;
@@ -190,7 +195,7 @@ body {
 }
 
 .extended-matrix-table td {
-    width: 56px;
+    width: 62px;
     height: 42px;
     text-align: center;
     font-weight: bold;
@@ -207,7 +212,7 @@ body {
     color: #424242;
 }
 
-/* Cajas de Diagonales (Verde y Rojo) */
+/* Cajas de Diagonales */
 .diag-box {
     padding: 14px 18px;
     border-radius: 6px;
@@ -236,7 +241,7 @@ body {
     margin-top: 6px;
 }
 
-/* Tarjeta Final de Determinante */
+/* Tarjeta Final */
 .final-card {
     background-color: var(--soft-cream);
     border: 1px solid #F5D5A8;
@@ -261,7 +266,6 @@ body {
     margin: 12px 0;
 }
 
-/* Diagnóstico de Solvencia */
 .diagnosis-banner {
     margin-top: 14px;
     padding: 12px 16px;
@@ -283,7 +287,6 @@ body {
     border: 1px solid #EF9A9A;
 }
 
-/* Pie de página */
 .footer {
     margin-top: 22px;
     text-align: center;
